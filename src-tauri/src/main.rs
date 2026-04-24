@@ -1,7 +1,8 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use tauri::{Manager, Window};
+use tauri::{Manager, Runtime};
+use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
 
 /**
  * Alti Desktop — Industrial Rust Bridge.
@@ -28,14 +29,15 @@ async fn get_swarm_telemetry() -> Result<serde_json::Value, String> {
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![execute_agent_mission, get_swarm_telemetry])
         .setup(|app| {
             let window = app.get_webview_window("main").unwrap();
             
             #[cfg(target_os = "macos")]
             {
-                use tauri_plugin_vibrancy::MacOSVibrancy;
-                window.apply_vibrancy(tauri_plugin_vibrancy::NSVisualEffectMaterial::AppearanceBased, None, None, None).unwrap();
+                apply_vibrancy(&window, NSVisualEffectMaterial::AppearanceBased, None, None)
+                    .expect("Unsupported platform! 'Best in the World' vibrancy failed.");
             }
 
             Ok(())
