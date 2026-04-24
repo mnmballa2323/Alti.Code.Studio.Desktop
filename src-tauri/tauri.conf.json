@@ -12,18 +12,19 @@
   "app": {
     "windows": [
       {
-        "title": "Alti Code Studio",
+        "title": "",
         "width": 1200,
         "height": 800,
         "resizable": true,
         "fullscreen": false,
         "transparent": true,
         "decorations": true,
-        "titleBarStyle": "Overlay"
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true
       }
     ],
     "security": {
-      "csp": "default-src 'self' 'unsafe-inline' https://*.google.com; connect-src 'self' ws://localhost:* http://localhost:*"
+      "csp": "default-src 'self' 'unsafe-inline' blob: https://*.google.com https://cdn.jsdelivr.net https://unpkg.com; worker-src 'self' blob:; connect-src 'self' ws://localhost:* http://localhost:*"
     }
   },
 
