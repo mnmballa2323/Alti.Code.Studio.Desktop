@@ -4,10 +4,10 @@
   "version": "1.0.0",
   "identifier": "com.alti.code.studio",
   "build": {
-    "beforeDevCommand": "",
+    "beforeDevCommand": "cd ../../alti.code.studio.frontend && npm run dev -- -p 3000",
     "devUrl": "http://localhost:3000",
-    "beforeBuildCommand": "npm run build",
-    "frontendDist": "../dist"
+    "beforeBuildCommand": "cd ../../alti.code.studio.frontend && BUILD_TARGET=desktop npm run build",
+    "frontendDist": "../../alti.code.studio.frontend/out"
   },
   "app": {
     "windows": [
@@ -24,7 +24,7 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self' 'unsafe-inline' blob: https://*.google.com https://cdn.jsdelivr.net https://unpkg.com; worker-src 'self' blob:; connect-src 'self' ws://localhost:* http://localhost:*"
+      "csp": "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://*.google.com https://cdn.jsdelivr.net https://unpkg.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://cdn.jsdelivr.net https://unpkg.com; worker-src 'self' blob: data:; connect-src 'self' ws://localhost:* wss://localhost:* http://localhost:* ws://127.0.0.1:* http://127.0.0.1:* https://*.insocode.com https://*.americanprivatecloud.com https://cdn.jsdelivr.net https://unpkg.com; font-src 'self' data: https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com"
     }
   },
 
