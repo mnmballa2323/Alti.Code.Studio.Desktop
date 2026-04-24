@@ -1,0 +1,115 @@
+.app-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.brand-text {
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+  color: #f8fafc;
+}
+
+.version-badge {
+  color: #38bdf8;
+  font-size: 0.65rem;
+  margin-left: 8px;
+  background: rgba(56, 189, 248, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.clearance-badge {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 4px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.chat-viewport {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 40px;
+  z-index: 1;
+}
+
+.system-greeting {
+  margin: auto;
+  text-align: center;
+  max-width: 600px;
+}
+
+.system-greeting h1 {
+  font-size: 2rem;
+  font-weight: 300;
+  margin-bottom: 12px;
+  background: linear-gradient(to bottom, #fff, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.system-greeting p {
+  color: #64748b;
+  font-size: 1.1rem;
+}
+
+.command-bar-container {
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 40px;
+}
+
+.command-bar {
+  width: 100%;
+  max-width: 800px;
+  padding: 4px 16px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.command-bar input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 16px;
+  color: #f8fafc;
+  font-size: 1rem;
+  outline: none;
+}
+
+.shortcut-hint {
+  font-size: 0.7rem;
+  color: #475569;
+  padding: 4px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.enterprise-footer {
+  height: 32px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.65rem;
+  color: #475569;
+  background: rgba(2, 6, 23, 0.9);
+}
+
+.connection-stats span {
+  margin-right: 24px;
+}
