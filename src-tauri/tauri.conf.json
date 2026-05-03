@@ -10,6 +10,7 @@
     "frontendDist": "../alti.code.studio.frontend/out"
   },
   "app": {
+    "macOSPrivateApi": true,
     "windows": [
       {
         "title": "",
