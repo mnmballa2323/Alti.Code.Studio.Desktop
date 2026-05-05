@@ -4,6 +4,8 @@
 use tauri::{Manager, Runtime};
 use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
 use std::process::Command;
+use std::fs;
+use std::path::Path;
 use aes_gcm::{
     aead::{Aead, AeadCore, KeyInit, OsRng},
     Aes256Gcm, Nonce, Key
@@ -79,6 +81,33 @@ async fn encrypt_codebase_telemetry(plaintext: String) -> Result<String, String>
     Ok(base64_standard.encode(combined))
 }
 
+#[tauri::command]
+async fn read_file_native(path: String) -> Result<String, String> {
+    // Ultra-fast native file reading bridging directly to React
+    fs::read_to_string(&path).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn write_file_native(path: String, content: String) -> Result<(), String> {
+    // Ultra-fast native file writing bridging directly to React
+    fs::write(&path, content).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn list_directory_native(path: String) -> Result<Vec<String>, String> {
+    // Bare-metal directory enumeration
+    let mut entries = Vec::new();
+    let dir = fs::read_dir(&path).map_err(|e| e.to_string())?;
+    
+    for entry in dir {
+        if let Ok(entry) = entry {
+            entries.push(entry.path().display().to_string());
+        }
+    }
+    
+    Ok(entries)
+}
+
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
@@ -88,7 +117,10 @@ fn main() {
             get_swarm_telemetry, 
             stream_backend_binary,
             execute_os_command,
-            encrypt_codebase_telemetry
+            encrypt_codebase_telemetry,
+            read_file_native,
+            write_file_native,
+            list_directory_native
         ])
         .setup(|app| {
             let window = app.get_webview_window("main").unwrap();
