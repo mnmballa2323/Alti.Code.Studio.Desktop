@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import './App.css';
 
 /**
@@ -9,6 +9,89 @@ import './App.css';
 function App() {
   const [prompt, setPrompt] = useState('');
   const [isFocused, setIsFocused] = useState(false);
+  const [messages, setMessages] = useState<{role: string, content: string}[]>([]);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const endOfMessagesRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const handleSubmit = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && prompt.trim() && !isStreaming) {
+      const userMessage = prompt;
+      setPrompt('');
+      setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+      setIsStreaming(true);
+      
+      // Add an empty assistant message to append to
+      setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
+
+      try {
+        const response = await fetch('http://localhost:3000/api/v1/ai/task/execute', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: userMessage })
+        });
+
+        if (!response.body) throw new Error("No response body");
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split('\n\n');
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const dataStr = line.replace('data: ', '').trim();
+              if (!dataStr) continue;
+              try {
+                const data = JSON.parse(dataStr);
+                if (data.status === 'DONE') {
+                  setIsStreaming(false);
+                  break;
+                }
+                if (data.status === 'ERROR') {
+                  setMessages(prev => {
+                    const newArr = [...prev];
+                    newArr[newArr.length - 1].content += `\n[ERROR]: ${data.message}`;
+                    return newArr;
+                  });
+                  break;
+                }
+                
+                // Assuming data has a message or delta field
+                const textToAdd = data.message || data.delta || JSON.stringify(data);
+                
+                setMessages(prev => {
+                  const newArr = [...prev];
+                  const lastMsg = newArr[newArr.length - 1];
+                  lastMsg.content = lastMsg.content ? lastMsg.content + '\n' + textToAdd : textToAdd;
+                  return newArr;
+                });
+              } catch (e) {
+                console.error("Parse error", e);
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        setMessages(prev => {
+           const newArr = [...prev];
+           newArr[newArr.length - 1].content += "\n[FATAL ERROR] Could not reach backend swarm on localhost:3000";
+           return newArr;
+        });
+      } finally {
+        setIsStreaming(false);
+      }
+    }
+  };
 
   return (
     <>
@@ -28,25 +111,50 @@ function App() {
         </header>
 
         <div className="main-content">
-          <main className="chat-viewport">
-            <div className="system-greeting">
-              <h1>Welcome to the Nexus, Commander.</h1>
-              <p>The smartest software engineer in the world is online.</p>
+          <main className="chat-viewport flex flex-col h-full" style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
+            
+            <div className="messages-scroll" style={{ flex: 1, overflowY: 'auto', padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', maxWidth: '800px', margin: '0 auto' }}>
+              {messages.length === 0 ? (
+                <div className="system-greeting" style={{ margin: 'auto', textAlign: 'center' }}>
+                  <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Welcome to the Nexus, Commander.</h1>
+                  <p style={{ color: '#888' }}>The smartest software engineer in the world is online.</p>
+                </div>
+              ) : (
+                messages.map((msg, idx) => (
+                  <div key={idx} style={{ 
+                    alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                    background: msg.role === 'user' ? 'linear-gradient(135deg, #3b82f6, #8b5cf6)' : 'rgba(20, 20, 20, 0.7)',
+                    border: msg.role === 'user' ? 'none' : '1px solid #333',
+                    padding: '1rem 1.5rem',
+                    borderRadius: '16px',
+                    maxWidth: '80%',
+                    color: 'white',
+                    fontFamily: 'monospace',
+                    fontSize: '13px',
+                    whiteSpace: 'pre-wrap'
+                  }}>
+                    {msg.content}
+                  </div>
+                ))
+              )}
+              <div ref={endOfMessagesRef} />
             </div>
 
-            <div className="command-bar-container">
+            <div className="command-bar-container" style={{ padding: '2rem', paddingTop: 0 }}>
               <div className={`glass-panel command-bar ${isFocused ? 'focused' : ''}`}>
                 <input 
                   type="text" 
                   placeholder="Ask the Swarm to architect, build, and deploy..."
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
+                  onKeyDown={handleSubmit}
                   onFocus={() => setIsFocused(true)}
                   onBlur={() => setIsFocused(false)}
                   autoFocus
+                  disabled={isStreaming}
                 />
                 <div className="interaction-indicators">
-                  <span className="shortcut-hint">⌘ ↵</span>
+                  <span className="shortcut-hint">{isStreaming ? "PROCESSING..." : "⌘ ↵"}</span>
                 </div>
               </div>
             </div>
@@ -87,7 +195,7 @@ function App() {
 
               <div className="telemetry-card">
                 <div className="card-label">Global Context</div>
-                <div className="card-value">Synced</div>
+                <div className="card-value">{messages.length > 0 ? "Synced" : "Awaiting Input"}</div>
               </div>
             </div>
           </aside>
