@@ -13,13 +13,13 @@ use aes_gcm::{
 use base64::{Engine as _, engine::general_purpose::STANDARD as base64_standard};
 
 /**
- * Alti Desktop — Industrial Rust OS Agent & Cryptography Bridge.
+ * Inso Code Desktop — Industrial Rust OS Agent & Cryptography Bridge.
  * Providing 'Universe-Best' local orchestration for Fortune 500 agents with Zero-Knowledge encryption.
  */
 
 #[tauri::command]
 async fn execute_agent_mission(mission_id: String, command: String) -> Result<String, String> {
-    println!("🚀 [Alti-Bridge] Executing mission {}: {}", mission_id, command);
+    println!("🚀 [Inso-Bridge] Executing mission {}: {}", mission_id, command);
     // In a production build, this would trigger local Shell/CLI operations via the Nomad agent.
     Ok(format!("Mission {} successfully received by the local OS sentinel.", mission_id))
 }
@@ -39,7 +39,7 @@ async fn stream_backend_binary(payload: Vec<u8>) -> Result<String, String> {
     // Phase 1 IPC Optimization: 
     // This offloads the heavy AI JSON parsing from the React frontend to the Rust OS thread.
     // It receives compressed ArrayBuffers from desktop_ipc.service.js and parses them at bare-metal speeds.
-    println!("🚀 [Alti-Bridge] Received {} bytes of compressed binary stream. Decoding natively...", payload.len());
+    println!("🚀 [Inso-Bridge] Received {} bytes of compressed binary stream. Decoding natively...", payload.len());
     Ok("Decoded via Rust Engine".to_string())
 }
 
@@ -47,7 +47,7 @@ async fn stream_backend_binary(payload: Vec<u8>) -> Result<String, String> {
 async fn execute_os_command(command: String, args: Vec<String>) -> Result<String, String> {
     // EPIC 1: OS-Level Agent Escalation
     // This enables the Swarm to literally act as an OS Administrator on the local machine.
-    // Cursor only has text editing. The Alti Swarm can spin up docker containers, install native packages, 
+    // Cursor only has text editing. The Inso Swarm can spin up docker containers, install native packages, 
     // and control headless browsers directly through this Rust IPC bridge.
     println!("🔥 [OS-Agent] Swarm commanded local execution: {} {:?}", command, args);
     

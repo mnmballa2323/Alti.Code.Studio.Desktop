@@ -4,7 +4,7 @@ import App from "./App";
 import "./index.css";
 
 /**
- * Alti Code Studio Desktop — Production Entry Point.
+ * Inso Code Desktop — Production Entry Point.
  * Initializing the 'Event Horizon' native experience.
  */
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

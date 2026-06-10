@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import './App.css';
 
 /**
- * Alti Desktop — Industrial Command Center.
+ * Inso Code Desktop — Industrial Command Center.
  * The 'Universe-Best' interface for Fortune 500 orchestration.
  * Designed by the greatest software designer in history.
  */
@@ -107,7 +107,7 @@ function App() {
         
         <header className="enterprise-header">
           <div className="status-dot" style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 12px #10b981', marginRight: 12 }} />
-          <span className="brand-text">ALTI CODE STUDIO <span className="version-badge">DESKTOP v3.0.0</span></span>
+          <span className="brand-text">INSO CODE <span className="version-badge">DESKTOP v3.0.0</span></span>
           <div className="spacer" />
           <div className="clearance-badge">SECURE CLEARANCE: OMEGA</div>
         </header>
