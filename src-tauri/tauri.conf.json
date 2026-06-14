@@ -6,11 +6,12 @@
   "build": {
     "beforeDevCommand": "",
     "devUrl": "http://localhost:3005",
-    "beforeBuildCommand": "cd ../alti.code.studio.frontend && BUILD_TARGET=desktop npm run build",
-    "frontendDist": "../alti.code.studio.frontend/out"
+    "beforeBuildCommand": "cd ../alti.code.studio.frontend && (mv app/api ./api-backup || true) && BUILD_TARGET=desktop npm run build; (mv ./api-backup app/api || true)",
+    "frontendDist": "../../alti.code.studio.frontend/out"
   },
   "app": {
     "macOSPrivateApi": true,
+    "withGlobalTauri": true,
     "windows": [
       {
         "title": "",
