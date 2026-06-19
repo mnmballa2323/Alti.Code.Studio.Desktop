@@ -15,7 +15,7 @@
     "windows": [
       {
         "title": "",
-        "url": "/new-chat",
+        "url": "/login",
         "width": 1200,
         "height": 800,
         "resizable": true,
