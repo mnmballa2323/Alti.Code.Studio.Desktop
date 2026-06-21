@@ -59,9 +59,12 @@ if [ $WARMED -ge $MAX_WARM ]; then
   echo "⚠️  [Inso Dev] /login warm-up timed out — launching anyway"
 fi
 
-# ── Pre-warm /new-chat — fire and forget (lower priority) ────────────────────
-echo "🔥 [Inso Dev] Pre-warming /new-chat in background..."
-curl -s --max-time 60 http://localhost:$PORT/new-chat > /dev/null &
+# ── Pre-warm all app routes in background ─────────────────────────────────────
+echo "🔥 [Inso Dev] Pre-warming all core pages in background for instant loading..."
+for path in new-chat chat agents instructions guardrails licenses knowledge repositories developer-api sdk vault connect-apps database cloud; do
+  curl -s --max-time 30 "http://localhost:$PORT/$path" > /dev/null &
+  sleep 0.3
+done
 
 # ── Launch Tauri ──────────────────────────────────────────────────────────────
 echo "🖥️  [Inso Dev] Launching Tauri desktop app..."
