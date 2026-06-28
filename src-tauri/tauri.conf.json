@@ -41,5 +41,14 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "updater": {
+      "active": true,
+      "endpoints": [
+        "https://updates.insocode.com/update/{{target}}/{{current_version}}"
+      ],
+      "pubkey": "dW51c2VkX3B1YmxpY19rZXlfZm9yX3NpZ25pbmdfdXBkYXRlc19kZW1vCg=="
+    }
   }
 }
