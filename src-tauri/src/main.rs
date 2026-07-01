@@ -108,6 +108,25 @@ async fn list_directory_native(path: String) -> Result<Vec<String>, String> {
     Ok(entries)
 }
 
+#[tauri::command]
+async fn spawn_project_window(app_handle: tauri::AppHandle, slug: String) -> Result<(), String> {
+    let url = format!("/login?project={}", slug);
+    tauri::WebviewWindowBuilder::new(
+        &app_handle,
+        format!("window_{}", slug),
+        tauri::WebviewUrl::App(url.into())
+    )
+    .title(format!("Alti Code Studio — {}", slug))
+    .inner_size(1200.0, 800.0)
+    .resizable(true)
+    .decorations(true)
+    .title_bar_style(tauri::TitleBarStyle::Overlay)
+    .hidden_title(true)
+    .build()
+    .map_err(|e| e.to_string())?;
+    Ok(())
+}
+
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
@@ -120,25 +139,10 @@ fn main() {
             encrypt_codebase_telemetry,
             read_file_native,
             write_file_native,
-            list_directory_native
+            list_directory_native,
+            spawn_project_window
         ])
-        .setup(|app| {
-            let window = app.get_webview_window("main").unwrap();
-            
-            #[cfg(target_os = "macos")]
-            {
-                apply_vibrancy(&window, NSVisualEffectMaterial::AppearanceBased, None, None)
-                    .expect("Unsupported platform! 'Best in the World' vibrancy failed.");
-            }
-
-            #[cfg(target_os = "windows")]
-            {
-                // Native Hardware Acceleration for Windows 11/10
-                // Attempts Mica glass effect first, falling back to Acrylic for older builds.
-                let _ = window_vibrancy::apply_mica(&window, Some(true))
-                    .or_else(|_| window_vibrancy::apply_blur(&window, Some((18, 18, 18, 125))));
-            }
-
+        .setup(|_app| {
             Ok(())
         })
         .run(tauri::generate_context!())
