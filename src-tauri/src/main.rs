@@ -127,6 +127,13 @@ async fn spawn_project_window(app_handle: tauri::AppHandle, slug: String) -> Res
     Ok(())
 }
 
+#[tauri::command]
+fn selectdir() -> Option<String> {
+    let res = rfd::FileDialog::new()
+        .pick_folder();
+    res.map(|path| path.to_string_lossy().to_string())
+}
+
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
@@ -140,7 +147,8 @@ fn main() {
             read_file_native,
             write_file_native,
             list_directory_native,
-            spawn_project_window
+            spawn_project_window,
+            selectdir
         ])
         .setup(|_app| {
             Ok(())
