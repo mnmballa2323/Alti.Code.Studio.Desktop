@@ -6,7 +6,7 @@ set -e
 
 NEXT_DIR="../alti.code.studio.frontend"
 BACKEND_DIR="../alti.code.studio.backend"
-PORT=3001
+PORT=3009
 BACKEND_PORT=5001
 
 # ── Kill any stale process on ports ───────────────────────────────────────────
@@ -91,7 +91,7 @@ fi
 
 # ── Pre-warm all app routes in background ─────────────────────────────────────
 echo "🔥 [Inso Dev] Pre-warming all core pages in background for instant loading..."
-for path in new-chat chat agents instructions guardrails licenses knowledge repositories developer-api sdk vault connect-apps database cloud; do
+for path in new-chat chat team agents instructions guardrails licenses knowledge repositories developer-api sdk vault connect-apps database cloud; do
   curl -s --max-time 30 "http://localhost:$PORT/$path" > /dev/null &
   sleep 0.3
 done
