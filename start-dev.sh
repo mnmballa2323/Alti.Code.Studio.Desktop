@@ -24,7 +24,7 @@ cd - > /dev/null
 
 # ── Wait until Backend responds 200 ─────────────────────────────────────
 echo "⏳ [Inso Dev] Waiting for Backend to be ready..."
-MAX_WAIT_BACKEND=90
+MAX_WAIT_BACKEND=5
 WAITED_BACKEND=0
 while [ $WAITED_BACKEND -lt $MAX_WAIT_BACKEND ]; do
   STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 2 http://localhost:$BACKEND_PORT/healthz 2>/dev/null || echo "000")
@@ -54,7 +54,7 @@ MAX_WAIT=90
 WAITED=0
 while [ $WAITED -lt $MAX_WAIT ]; do
   STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 2 http://localhost:$PORT/ 2>/dev/null || echo "000")
-  if [ "$STATUS" = "200" ]; then
+  if [ "$STATUS" = "200" ] || [ "$STATUS" = "302" ] || [ "$STATUS" = "307" ] || [ "$STATUS" = "401" ] || [ "$STATUS" = "403" ]; then
     echo "✅ [Inso Dev] Next.js root is ready"
     break
   fi
@@ -76,7 +76,7 @@ MAX_WARM=60
 WARMED=0
 while [ $WARMED -lt $MAX_WARM ]; do
   STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 http://localhost:$PORT/login 2>/dev/null || echo "000")
-  if [ "$STATUS" = "200" ]; then
+  if [ "$STATUS" = "200" ] || [ "$STATUS" = "302" ] || [ "$STATUS" = "307" ] || [ "$STATUS" = "401" ] || [ "$STATUS" = "403" ]; then
     echo "✅ [Inso Dev] /login compiled and ready"
     break
   fi
