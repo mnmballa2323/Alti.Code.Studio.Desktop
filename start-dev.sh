@@ -4,8 +4,8 @@
 
 set -e
 
-NEXT_DIR="../alti.code.studio.frontend"
-BACKEND_DIR="../alti.code.studio.backend"
+NEXT_DIR="../Inso.Code.Frontend"
+BACKEND_DIR="../Inso.Code.Backend"
 PORT=3009
 BACKEND_PORT=5001
 
@@ -14,6 +14,16 @@ echo "🧹 [Inso Dev] Clearing ports $PORT and $BACKEND_PORT..."
 lsof -ti :$PORT | xargs kill -9 2>/dev/null || true
 lsof -ti :$BACKEND_PORT | xargs kill -9 2>/dev/null || true
 sleep 1
+
+# ── Build Universal Agent Docker Image (If Docker is installed) ───────────────
+echo "🐳 [Inso Dev] Building Universal Agent Docker Image..."
+if command -v docker &> /dev/null; then
+  cd "$BACKEND_DIR/docker/agent"
+  docker build -t inso-agent-runner:latest . || echo "⚠️  Failed to build docker image. Make sure Docker Desktop is running."
+  cd - > /dev/null
+else
+  echo "⚠️  Docker is not installed. Skipping Universal Agent build."
+fi
 
 # ── Start Backend in background ───────────────────────────────────────────────
 echo "🚀 [Inso Dev] Starting Backend on port $BACKEND_PORT..."
@@ -44,7 +54,7 @@ fi
 # ── Start Next.js in background ───────────────────────────────────────────────
 echo "🚀 [Inso Dev] Starting Next.js on port $PORT..."
 cd "$NEXT_DIR"
-NEXT_PUBLIC_API_URL="http://localhost:$BACKEND_PORT/api/v1" npm run dev -- -p $PORT &
+NEXT_PUBLIC_API_URL="http://localhost:$BACKEND_PORT/api/v1" npx next dev -p $PORT &
 NEXT_PID=$!
 cd - > /dev/null
 
