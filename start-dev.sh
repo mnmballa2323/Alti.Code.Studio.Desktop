@@ -6,7 +6,7 @@ set -e
 
 NEXT_DIR="../Inso.Code.Frontend"
 BACKEND_DIR="../Inso.Code.Backend"
-PORT=3009
+PORT=3001
 BACKEND_PORT=5001
 
 # ── Kill any stale process on ports ───────────────────────────────────────────
