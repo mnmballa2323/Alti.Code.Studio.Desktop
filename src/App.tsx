@@ -30,7 +30,7 @@ function App() {
       setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
 
       try {
-        const response = await fetch('http://localhost:3000/api/v1/ai/task/execute', {
+        const response = await fetch('http://localhost:5001/api/v1/ai/task/execute', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ prompt: userMessage })
@@ -86,7 +86,7 @@ function App() {
         console.error(err);
         setMessages(prev => {
            const newArr = [...prev];
-           newArr[newArr.length - 1].content += "\n[FATAL ERROR] Could not reach backend swarm on localhost:3000";
+           newArr[newArr.length - 1].content += "\n[FATAL ERROR] Could not reach backend swarm on localhost:5001";
            return newArr;
         });
       } finally {
