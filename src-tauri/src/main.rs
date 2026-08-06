@@ -150,7 +150,13 @@ fn main() {
             spawn_project_window,
             selectdir
         ])
-        .setup(|_app| {
+        .setup(|app| {
+            #[cfg(debug_assertions)]
+            {
+                for window in app.webview_windows().values() {
+                    window.open_devtools();
+                }
+            }
             Ok(())
         })
         .run(tauri::generate_context!())
