@@ -12,9 +12,12 @@ PORT=3055
 BACKEND_PORT=5001
 
 # ── Kill any stale process on ports ───────────────────────────────────────────
-echo "🧹 [Inso Dev] Clearing ports $PORT and $BACKEND_PORT..."
+echo "🧹 [Inso Dev] Clearing ports $PORT, 5001 (Chat), 5002 (Code), 5003 (Create), 5004 (Cowork)..."
 lsof -ti :$PORT | xargs kill -9 2>/dev/null || true
-lsof -ti :$BACKEND_PORT | xargs kill -9 2>/dev/null || true
+lsof -ti :5001 | xargs kill -9 2>/dev/null || true
+lsof -ti :5002 | xargs kill -9 2>/dev/null || true
+lsof -ti :5003 | xargs kill -9 2>/dev/null || true
+lsof -ti :5004 | xargs kill -9 2>/dev/null || true
 sleep 1
 
 # ── Build Universal Agent Docker Image (If Docker is installed) ───────────────
@@ -27,21 +30,30 @@ else
   echo "⚠️  Docker is not installed. Skipping Universal Agent build."
 fi
 
-# ── Start Backend in background ───────────────────────────────────────────────
-echo "🚀 [Inso Dev] Starting Backend on port $BACKEND_PORT..."
+# ── Start 4 Isolated Mode Backends in background ─────────────────────────────
+echo "🚀 [Inso Dev] Starting 4 Isolated Mode Backends (Chat:5001, Code:5002, Create:5003, Cowork:5004)..."
 cd "$BACKEND_DIR"
-PORT=$BACKEND_PORT npm start &
-BACKEND_PID=$!
+MODE_DOMAIN=Chat PORT=5001 npm start &
+BACKEND_CHAT_PID=$!
+
+MODE_DOMAIN=Code PORT=5002 npm start &
+BACKEND_CODE_PID=$!
+
+MODE_DOMAIN=Create PORT=5003 npm start &
+BACKEND_CREATE_PID=$!
+
+MODE_DOMAIN=Cowork PORT=5004 npm start &
+BACKEND_COWORK_PID=$!
 cd - > /dev/null
 
-# ── Wait until Backend responds 200 ─────────────────────────────────────
-echo "⏳ [Inso Dev] Waiting for Backend to be ready..."
+# ── Wait until Chat Backend responds 200 ─────────────────────────────────────
+echo "⏳ [Inso Dev] Waiting for Chat Backend (port 5001) to be ready..."
 MAX_WAIT_BACKEND=5
 WAITED_BACKEND=0
 while [ $WAITED_BACKEND -lt $MAX_WAIT_BACKEND ]; do
-  STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 2 http://localhost:$BACKEND_PORT/healthz 2>/dev/null || echo "000")
+  STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 2 http://localhost:5001/healthz 2>/dev/null || echo "000")
   if [ "$STATUS" = "200" ] || [ "$STATUS" = "503" ]; then
-    echo "✅ [Inso Dev] Backend is ready (status: $STATUS)"
+    echo "✅ [Inso Dev] Mode Backends ready (status: $STATUS)"
     break
   fi
   sleep 1
@@ -50,13 +62,13 @@ while [ $WAITED_BACKEND -lt $MAX_WAIT_BACKEND ]; do
 done
 
 if [ $WAITED_BACKEND -ge $MAX_WAIT_BACKEND ]; then
-  echo "❌ [Inso Dev] Backend failed to start after ${MAX_WAIT_BACKEND}s. Continuing without backend..."
+  echo "❌ [Inso Dev] Chat Backend failed to start after ${MAX_WAIT_BACKEND}s. Continuing startup..."
 fi
 
 # ── Start Next.js in background ───────────────────────────────────────────────
 echo "🚀 [Inso Dev] Starting Next.js on port $PORT..."
 cd "$NEXT_DIR"
-NEXT_PUBLIC_API_URL="http://localhost:$BACKEND_PORT/api/v1" NEXTAUTH_URL="http://127.0.0.1:$PORT" npm run dev -- -H 127.0.0.1 -p $PORT &
+NEXT_PUBLIC_API_URL="http://localhost:5001/api/v1" NEXTAUTH_URL="http://127.0.0.1:$PORT" npm run dev -- -H 127.0.0.1 -p $PORT &
 NEXT_PID=$!
 cd - > /dev/null
 
@@ -77,7 +89,7 @@ done
 if [ $WAITED -ge $MAX_WAIT ]; then
   echo "❌ [Inso Dev] Next.js failed to start after ${MAX_WAIT}s"
   kill $NEXT_PID 2>/dev/null || true
-  kill $BACKEND_PID 2>/dev/null || true
+  kill $BACKEND_CHAT_PID $BACKEND_CODE_PID $BACKEND_CREATE_PID $BACKEND_COWORK_PID 2>/dev/null || true
   exit 1
 fi
 
@@ -95,4 +107,4 @@ npm run tauri dev
 
 # ── Cleanup ───────────────────────────────────────────────────────────────────
 kill $NEXT_PID 2>/dev/null || true
-kill $BACKEND_PID 2>/dev/null || true
+kill $BACKEND_CHAT_PID $BACKEND_CODE_PID $BACKEND_CREATE_PID $BACKEND_COWORK_PID 2>/dev/null || true
