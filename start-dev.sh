@@ -4,6 +4,8 @@
 
 set -e
 
+export PATH="$HOME/.cargo/bin:$PATH"
+
 NEXT_DIR="../Inso.Code.Frontend"
 BACKEND_DIR="../Inso.Code.Backend"
 PORT=3055
@@ -79,10 +81,13 @@ if [ $WAITED -ge $MAX_WAIT ]; then
   exit 1
 fi
 
-# ── Pre-warm Next.js /code route ──────────────────────────────────────────────
-echo "🔥 [Inso Dev] Pre-warming Next.js /code route..."
+# ── Pre-warm Next.js routes ───────────────────────────────────────────────────
+echo "🔥 [Inso Dev] Pre-warming Next.js /code, /chat, /create, /cowork routes..."
 curl -s -L --max-time 60 http://127.0.0.1:$PORT/code > /dev/null || true
-echo "✅ [Inso Dev] /code route pre-warmed"
+curl -s -L --max-time 60 http://127.0.0.1:$PORT/chat > /dev/null || true
+curl -s -L --max-time 60 http://127.0.0.1:$PORT/create > /dev/null || true
+curl -s -L --max-time 60 http://127.0.0.1:$PORT/cowork > /dev/null || true
+echo "✅ [Inso Dev] All 4 routes pre-warmed"
 
 # ── Launch Tauri ──────────────────────────────────────────────────────────────
 echo "🖥️  [Inso Dev] Launching Tauri desktop app..."
