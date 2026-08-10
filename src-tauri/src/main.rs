@@ -151,12 +151,13 @@ fn main() {
             selectdir
         ])
         .setup(|app| {
-            #[cfg(debug_assertions)]
-            {
-                for window in app.webview_windows().values() {
-                    window.open_devtools();
-                }
-            }
+            // DevTools disabled on startup — use View menu or Cmd+Opt+I to open manually
+            // #[cfg(debug_assertions)]
+            // {
+            //     for window in app.webview_windows().values() {
+            //         window.open_devtools();
+            //     }
+            // }
             Ok(())
         })
         .run(tauri::generate_context!())
