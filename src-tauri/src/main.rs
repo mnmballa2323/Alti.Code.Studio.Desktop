@@ -151,13 +151,21 @@ fn main() {
             selectdir
         ])
         .setup(|app| {
-            // DevTools disabled on startup — use View menu or Cmd+Opt+I to open manually
-            // #[cfg(debug_assertions)]
-            // {
-            //     for window in app.webview_windows().values() {
-            //         window.open_devtools();
-            //     }
-            // }
+            // Auto-set dev session cookie for desktop app (dev mode only)
+            #[cfg(debug_assertions)]
+            {
+                for (_, window) in app.webview_windows() {
+                    let _ = window.eval(
+                        r#"document.cookie = 'e2e-session=' + encodeURIComponent(JSON.stringify({
+                            id: '00000000-0000-0000-0000-000000000001',
+                            email: 'admin@inso.ai',
+                            name: 'Admin',
+                            role: 'admin',
+                            tenantId: '00000000-0000-0000-0000-000000000000'
+                        })) + '; path=/; max-age=2592000; SameSite=Lax';"#
+                    );
+                }
+            }
             Ok(())
         })
         .run(tauri::generate_context!())
