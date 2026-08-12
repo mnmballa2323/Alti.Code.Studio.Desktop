@@ -68,7 +68,7 @@ fi
 # ── Start Next.js in background ───────────────────────────────────────────────
 echo "🚀 [Inso Dev] Starting Next.js on port $PORT..."
 cd "$NEXT_DIR"
-NEXT_PUBLIC_API_URL="http://localhost:5001/api/v1" NEXTAUTH_URL="http://127.0.0.1:$PORT" npm run dev -- -H 127.0.0.1 -p $PORT &
+NEXT_PUBLIC_API_URL="http://localhost:5001/api/v1" NEXTAUTH_URL="http://127.0.0.1:$PORT" npx next dev -H 127.0.0.1 -p $PORT &
 NEXT_PID=$!
 cd - > /dev/null
 
