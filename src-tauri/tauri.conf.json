@@ -15,7 +15,7 @@
     "windows": [
       {
         "title": "",
-        "url": "/code",
+        "url": "/chat",
         "width": 1200,
         "height": 800,
         "resizable": true,
