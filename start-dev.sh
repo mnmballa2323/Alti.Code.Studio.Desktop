@@ -101,10 +101,9 @@ curl -s -L --max-time 60 http://127.0.0.1:$PORT/create > /dev/null || true
 curl -s -L --max-time 60 http://127.0.0.1:$PORT/cowork > /dev/null || true
 echo "✅ [Inso Dev] All 4 routes pre-warmed"
 
+trap "kill $NEXT_PID $BACKEND_CHAT_PID $BACKEND_CODE_PID $BACKEND_CREATE_PID $BACKEND_COWORK_PID 2>/dev/null || true" EXIT INT TERM
+
 # ── Launch Tauri ──────────────────────────────────────────────────────────────
 echo "🖥️  [Inso Dev] Launching Tauri desktop app..."
 npm run tauri dev
 
-# ── Cleanup ───────────────────────────────────────────────────────────────────
-kill $NEXT_PID 2>/dev/null || true
-kill $BACKEND_CHAT_PID $BACKEND_CODE_PID $BACKEND_CREATE_PID $BACKEND_COWORK_PID 2>/dev/null || true
