@@ -48,7 +48,7 @@ cd - > /dev/null
 
 # ── Wait until Chat Backend responds 200 ─────────────────────────────────────
 echo "⏳ [Inso Dev] Waiting for Chat Backend (port 5001) to be ready..."
-MAX_WAIT_BACKEND=5
+MAX_WAIT_BACKEND=20
 WAITED_BACKEND=0
 while [ $WAITED_BACKEND -lt $MAX_WAIT_BACKEND ]; do
   STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 2 http://localhost:5001/healthz 2>/dev/null || echo "000")
